@@ -42,7 +42,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
        SharedPreferences sharedPreferences= getPreferenceScreen().getSharedPreferences();
        PreferenceScreen prefScreen=getPreferenceScreen();
        int count=prefScreen.getPreferenceCount();
-       for(int i=0; i<=count; i++){
+       for(int i=0; i<count; i++){
            Preference p= prefScreen.getPreference(i);
             if(!(p instanceof CheckBoxPreference)){
                 String val=sharedPreferences.getString(p.getKey(),"");
@@ -73,7 +73,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         if(preference instanceof ListPreference){
             ListPreference listPreference=(ListPreference) preference;
             int prefIndex=listPreference.findIndexOfValue(value);
-                if(prefIndex>0){
+                if(prefIndex>=0){
                     listPreference.setSummary(listPreference.getEntries()[prefIndex]);
                 }
         }
