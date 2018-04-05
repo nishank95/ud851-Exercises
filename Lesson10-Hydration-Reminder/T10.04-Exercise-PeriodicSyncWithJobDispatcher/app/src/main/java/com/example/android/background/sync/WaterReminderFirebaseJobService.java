@@ -15,11 +15,40 @@
  */
 package com.example.android.background.sync;
 
-public class WaterReminderFirebaseJobService {
-    // TODO (3) WaterReminderFirebaseJobService should extend from JobService
+import android.annotation.SuppressLint;
+import android.app.job.JobService;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 
+import com.firebase.jobdispatcher.JobParameters;
+
+public class WaterReminderFirebaseJobService extends com.firebase.jobdispatcher.JobService {
+    // TODO (3) WaterReminderFirebaseJobService should extend from JobService
+private AsyncTask mBackgroundTask;
     // TODO (4) Override onStartJob
-        // TODO (5) By default, jobs are executed on the main thread, so make an anonymous class extending
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    public boolean onStartJob(final JobParameters jobParameters) {
+        mBackgroundTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                Context context = WaterReminderFirebaseJobService.this;
+                ReminderTasks.executeTask(context,ReminderTasks.ACTION_CHARGING_REMINDER);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                jobFinished(jobParameters,false);
+            }
+        };
+        mBackgroundTask.execute();
+        return true;
+    }
+
+
+    // TODO (5) By default, jobs are executed on the main thread, so make an anonymous class extending
         //  AsyncTask called mBackgroundTask.
             // TODO (6) Override doInBackground
                 // TODO (7) Use ReminderTasks to execute the new charging reminder task you made, use
@@ -33,6 +62,14 @@ public class WaterReminderFirebaseJobService {
         // TODO (10) Return true
 
     // TODO (11) Override onStopJob
+    @Override
+    public boolean onStopJob(JobParameters jobParameters) {
+        if(mBackgroundTask != null){
+            mBackgroundTask.cancel(true);
+        }
+        return true;
+    }
+
         // TODO (12) If mBackgroundTask is valid, cancel it
         // TODO (13) Return true to signify the job should be retried
 
